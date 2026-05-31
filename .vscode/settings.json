@@ -1,0 +1,6 @@
+{
+    "python.defaultInterpreterPath": "d:\\Antigravity\\Aanandvihar\\langgraph_env3\\Scripts\\python.exe",
+    "python.analysis.extraPaths": [
+        "d:\\Antigravity\\Aanandvihar\\langgraph_env3\\Lib\\site-packages"
+    ]
+}
