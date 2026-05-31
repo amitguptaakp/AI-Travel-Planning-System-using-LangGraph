@@ -139,7 +139,18 @@ graph.add_edge("final_agent", END)
 
 
 # Persistent connection so both CLI and Streamlit can share the compiled app
-_conn = psycopg.connect(DATABASE_URL, autocommit=True)
+# Use keyword-based connection to avoid URL-parsing issues with special chars in password
+if DATABASE_URL:
+    _conn = psycopg.connect(DATABASE_URL, autocommit=True)
+else:
+    _conn = psycopg.connect(
+        host=os.getenv("DB_HOST", "localhost"),
+        port=int(os.getenv("DB_PORT", "5432")),
+        user=os.getenv("DB_USER", "postgres"),
+        password=os.getenv("DB_PASSWORD", ""),
+        dbname=os.getenv("DB_NAME", "langgraph_memory"),
+        autocommit=True,
+    )
 checkpointer = PostgresSaver(_conn)
 checkpointer.setup()
 
