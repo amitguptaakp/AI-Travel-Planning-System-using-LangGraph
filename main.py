@@ -29,7 +29,7 @@ from langgraph_env3.tools.flight_tool import search_flights
 from dotenv import load_dotenv
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+
 
 # LLM
 llm = ChatGroq(
@@ -124,7 +124,7 @@ def final_agent(state: TravelState):
     }
 
 
-graph = StateGraph(TravelState)
+graph = StateGraph(TravelState)  # type: ignore[type-var]
 
 graph.add_node("flight_agent", flight_agent)
 graph.add_node("hotel_agent", hotel_agent)
@@ -140,18 +140,15 @@ graph.add_edge("final_agent", END)
 
 # Persistent connection so both CLI and Streamlit can share the compiled app
 # Use keyword-based connection to avoid URL-parsing issues with special chars in password
-if DATABASE_URL:
-    _conn = psycopg.connect(DATABASE_URL, autocommit=True)
-else:
-    _conn = psycopg.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        port=int(os.getenv("DB_PORT", "5432")),
-        user=os.getenv("DB_USER", "postgres"),
-        password=os.getenv("DB_PASSWORD", ""),
-        dbname=os.getenv("DB_NAME", "langgraph_memory"),
-        autocommit=True,
-    )
-checkpointer = PostgresSaver(_conn)
+_conn = psycopg.connect(
+    host=os.getenv("DB_HOST", "localhost"),
+    port=int(os.getenv("DB_PORT", "5432")),
+    user=os.getenv("DB_USER", "postgres"),
+    password=os.getenv("DB_PASSWORD", ""),
+    dbname=os.getenv("DB_NAME", "langgraph_memory"),
+    autocommit=True,
+)
+checkpointer = PostgresSaver(_conn)  # type: ignore[arg-type]
 checkpointer.setup()
 
 app = graph.compile(checkpointer=checkpointer)
