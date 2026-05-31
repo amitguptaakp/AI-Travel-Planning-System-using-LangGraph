@@ -139,7 +139,7 @@ graph.add_edge("final_agent", END)
 
 
 # Persistent connection so both CLI and Streamlit can share the compiled app
-_conn = psycopg.connect(DATABASE_URL)
+_conn = psycopg.connect(DATABASE_URL, autocommit=True)
 checkpointer = PostgresSaver(_conn)
 checkpointer.setup()
 
